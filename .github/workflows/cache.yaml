@@ -33,7 +33,6 @@ jobs:
       - name: Cache ProjectDiscovery tools
         uses: actions/cache@v2
         with:
-          runn-verison: v1
           cache: 'tools'
           path: /home/runner/tools
           key: ${{ runner.os }}-go-tools
