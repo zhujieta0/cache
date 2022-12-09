@@ -22,23 +22,19 @@ jobs:
         run: sudo apt-get install libpcap-dev 
 
       - name: Setting up ProjectDiscovery tools
-        #uses:
         env:
           GO111MODULE: on
         run: |
           go install -v github.com/projectdiscovery/katana/cmd/katana@latest
-          
-
         shell: bash
         
         
-      - name: Setup evn
-        uses: actions/setup-env@v1
+      - name: Cache ProjectDiscovery tools
+        uses: actions/cache@v2
         with:
-          system: 'V1'
-          cash: 'env'
-          path: /home/runner/discove
-          key: ${{ runner.os }}-discove
+          path: /home/runner/go/bin
+          key: ${{ runner.os }}-go-tools
+
         
       - name: Setup Dependencies
         run: katana -d 1 -u http://www.baidu.com 
