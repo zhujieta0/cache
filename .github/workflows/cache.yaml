@@ -28,12 +28,17 @@ jobs:
         run: |
           go install -v github.com/projectdiscovery/katana/cmd/katana@latest
           
-          with:
-            os:'V1'
-            cash: 'discover'
-            path: /home/runner/discove
-            key: ${{ runner.os }}-discove
+
         shell: bash
+        
+        
+      - name: Setup evn
+        uses: actions/setup-env@v1
+        with:
+          system: 'V1'
+          cash: 'env'
+          path: /home/runner/discove
+          key: ${{ runner.os }}-discove
         
       - name: Setup Dependencies
         run: katana -d 1 -u http://www.baidu.com 
