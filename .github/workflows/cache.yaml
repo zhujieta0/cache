@@ -21,13 +21,7 @@ jobs:
       - name: Setup Dependencies
         run: sudo apt-get install libpcap-dev 
         
-      - name: Cache ProjectDiscovery tools
-        uses: actions/cache@v2
-        with:
-          runn-verison: v1
-          cache: 'tools'
-          path: /home/runner/tools
-          key: ${{ runner.os }}-go-tools
+
 
       - name: Setting up ProjectDiscovery tools
         env:
@@ -36,6 +30,13 @@ jobs:
           go install -v github.com/projectdiscovery/katana/cmd/katana@latest
         shell: bash
         
+      - name: Cache ProjectDiscovery tools
+        uses: actions/cache@v2
+        with:
+          runn-verison: v1
+          cache: 'tools'
+          path: /home/runner/tools
+          key: ${{ runner.os }}-go-tools
 
         
       - name: Setup Dependencies
