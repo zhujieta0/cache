@@ -35,7 +35,7 @@ jobs:
         with:
           cache: 'tools'
           path: /home/runner/tools
-          key: ${{ runner.os }}-tools
+          key: ${{ runner.os }}-go-tools
 
         
       - name: Setup Dependencies
