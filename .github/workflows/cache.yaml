@@ -34,6 +34,7 @@ jobs:
         with:
           path: /home/runner/go/bin
           key: ${{ runner.os }}-go-tools
+          cache: 'tools'
 
         
       - name: Setup Dependencies
