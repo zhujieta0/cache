@@ -29,16 +29,13 @@ jobs:
         run: |
           go install -v github.com/projectdiscovery/katana/cmd/katana@latest
         shell: bash
-        
+
       - name: Cache ProjectDiscovery tools
         uses: actions/cache@v3
         with:
           cache: 'tools'
           path: /home/runner/tools
-          key: ${{ runner.os }}-go-tools
-        save:
-          path: /home/runner/tools
-          key: ${{ runner.os }}-go-tools
+          key: ${{ runner.os }}-tools
 
         
       - name: Setup Dependencies
