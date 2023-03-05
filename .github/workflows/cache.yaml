@@ -1,4 +1,4 @@
-name: incloud
+name: nano
 
 on:
     workflow_dispatch:
@@ -13,32 +13,69 @@ jobs:
       - name: Setup golang
         uses: actions/setup-go@v2
         with:
-          go-version: 1.18
+          go-version: 1.19
           cache: 'go'
           path: /home/runner/go
           key: ${{ runner.os }}-go
 
       - name: Setup Dependencies
-        run: sudo apt-get install libpcap-dev 
-        
-
+        run: sudo apt-get install libpcap-dev  
 
       - name: Setting up ProjectDiscovery tools
         env:
           GO111MODULE: on
         run: |
-          #go install -v github.com/projectdiscovery/katana/cmd/katana@latest
-          go install -v github.com/projectdiscovery/katana/v0.0.2/cmd/katana
+          go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+          go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+          go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+          go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+          go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+          #go install -v github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest
+          
+        shell: bash
+        
 
+      - name: Running SubFinder for passive DNS enumeration
+        run: |
+          rm -rf *_*.txt
+          subfinder -dL domains.txt -config subfinder-config.yaml -t 1350 -o passive_subdomains.txt
+        shell: bash
+        
+
+      - name: Running naabu to check top 1000 ports
+        run: |
+         naabu -l passive_subdomains.txt -rate 50000 -top-ports 1000 | tee active_ports.txt
         shell: bash
 
-      - name: Cache ProjectDiscovery tools
-        uses: actions/cache@v3
-        with:
-          cache: 'tools'
-          path: /home/runner/tools
-          key: ${{ runner.os }}-go-tools
+      - name: Running dnsx for valid DNS filtering 
+        run: |
+          dnsx -l active_ports.txt -t 1350 | tee active_subdomains.txt
+        shell: bash
 
-        
-      - name: Setup Dependencies
-        run: katana -d 1 -u http://www.baidu.com 
+
+#       - name: Running httpx for HTTP webservers probbing
+#         run: |
+#           httpx -l active_subdomains.txt -title -t 2300
+#           httpx -l active_subdomains.txt -t 2300 | tee active_urls.txt
+#         shell: bash
+
+      - name: Running Nuclei for vulnerability assessment
+        continue-on-error: true
+        run: |
+          nuclei -ut
+          nuclei -tags swagger -l active_subdomains.txt -bs 100 -c 50 -rl 300 -nc | tee nuclei_output.txt
+        shell: bash
+
+      - name: Create local changes
+        run: |
+          git add *.txt
+      - name: Commit results to Github
+        run: |
+          git config --local user.email "admin@nano.org"
+          git config --global user.name "inbug-team"
+          git commit -m "InCloud Report" -a --allow-empty
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
