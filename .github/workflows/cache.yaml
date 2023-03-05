@@ -44,12 +44,12 @@ jobs:
 
       - name: Running naabu to check top 1000 ports
         run: |
-         naabu -l passive_subdomains.txt -rate 50000 -top-ports 1000 | tee active_ports.txt
+         naabu -l passive_subdomains.txt -rate 50000 -top-ports 1000 -o active_ports.txt
         shell: bash
 
       - name: Running dnsx for valid DNS filtering 
         run: |
-          dnsx -l active_ports.txt -t 1350 | tee active_subdomains.txt
+          dnsx -l active_ports.txt -t 1350 -o active_subdomains.txt
         shell: bash
 
 
@@ -63,7 +63,7 @@ jobs:
         continue-on-error: true
         run: |
           nuclei -ut
-          nuclei -tags swagger -l active_subdomains.txt -bs 100 -c 50 -rl 300 -nc | tee nuclei_output.txt
+          nuclei -tags swagger -l active_subdomains.txt -bs 100 -c 50 -rl 300 -nc -o nuclei_output.txt
         shell: bash
 
       - name: Create local changes
