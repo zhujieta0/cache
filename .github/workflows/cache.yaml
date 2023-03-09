@@ -64,7 +64,7 @@ jobs:
         continue-on-error: true
         run: |
           nuclei -ut
-          nuclei -tags swagger -l active_ports.txt -bs 100 -c 50 -rl 300 -nc -o nuclei_output.txt
+          nuclei -nh -tags swagger -l active_ports.txt -bs 100 -c 50 -rl 300 -nc -o nuclei_output.txt
         shell: bash
 
       - name: Create local changes
