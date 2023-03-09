@@ -26,7 +26,7 @@ jobs:
           GO111MODULE: on
         run: |
           go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-          go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+          #go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
           go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
           #go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
           go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
@@ -48,10 +48,10 @@ jobs:
          naabu -l passive_subdomains.txt -rate 80000 -top-ports 1000 -o active_ports.txt
         shell: bash
 
-      - name: Running dnsx for valid DNS filtering 
-        run: |
-          dnsx -l active_ports.txt -t 1350 -o active_subdomains.txt
-        shell: bash
+#       - name: Running dnsx for valid DNS filtering 
+#         run: |
+#           dnsx -l active_ports.txt -t 1350 -o active_subdomains.txt
+#         shell: bash
 
 
 #       - name: Running httpx for HTTP webservers probbing
@@ -64,7 +64,7 @@ jobs:
         continue-on-error: true
         run: |
           nuclei -ut
-          nuclei -tags swagger -l active_subdomains.txt -bs 100 -c 50 -rl 300 -nc -o nuclei_output.txt
+          nuclei -tags swagger -l active_ports.txt -bs 100 -c 50 -rl 300 -nc -o nuclei_output.txt
         shell: bash
 
       - name: Create local changes
