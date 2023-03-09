@@ -45,7 +45,7 @@ jobs:
       - name: Running naabu to check top 1000 ports
         continue-on-error: true
         run: |
-         naabu -l passive_subdomains.txt -rate 80000 -top-ports 1000 -o active_ports.txt
+         naabu -l passive_subdomains.txt -rate 100000 -top-ports 1000 -o active_ports.txt
         shell: bash
 
 #       - name: Running dnsx for valid DNS filtering 
